@@ -415,7 +415,7 @@ void CMario::SetState(int state)
     nx = -1;
     break;
 
-  // MARIO JUMPING
+    // MARIO JUMPING
   case MARIO_STATE_JUMP:
     if (isSitting) break;
     if (isOnPlatform)
@@ -431,7 +431,7 @@ void CMario::SetState(int state)
     if (vy < 0) vy += MARIO_JUMP_SPEED_Y / 2;
     break;
 
-  // BIG & RACCOON MARIO SITTING
+    // BIG & RACCOON MARIO SITTING
   case MARIO_STATE_SIT:
     if (isSpinning) break;
     if (isOnPlatform && level != MARIO_LEVEL_SMALL)
@@ -452,14 +452,20 @@ void CMario::SetState(int state)
     }
     break;
 
-  // RACCOON MARIO FLYING
+    // RACCOON MARIO FLYING
   case MARIO_STATE_FLY:
     if (isSitting) break;
     if (level != MARIO_LEVEL_RACCOON) break;
     isFlying = true;
     if (vy < 0)
       vy += MARIO_RACCOON_GRAVITY;
-    else vy = 0.0f;
+    else {
+      vy = 0.0f;
+      vx = 0;
+      ax = 0;
+      state = MARIO_STATE_IDLE;
+      break;
+    }
     ax = 0.0f;
     vx = 0.0f;
     break;
@@ -470,7 +476,13 @@ void CMario::SetState(int state)
     isFlying = true;
     if (vy < 0)
       vy += MARIO_RACCOON_GRAVITY;
-    else vy = 0.0f;
+    else {
+      vy = 0.0f;
+      vx = MARIO_WALKING_SPEED;
+      ax = MARIO_ACCEL_WALK_X;
+      state = MARIO_STATE_WALKING_RIGHT;
+      break;
+    }
     maxVx = MARIO_FLYING_SPEED;
     ax = MARIO_ACCEL_FLYING_X;
     nx = 1;
@@ -482,23 +494,28 @@ void CMario::SetState(int state)
     isFlying = true;
     if (vy < 0)
       vy += MARIO_RACCOON_GRAVITY;
-    else vy = 0.0f;
+    else {
+      vy = 0.0f;
+      vx = -MARIO_WALKING_SPEED;
+      ax = -MARIO_ACCEL_WALK_X;
+      state = MARIO_STATE_WALKING_LEFT;
+      break;
+    }
     maxVx = -MARIO_FLYING_SPEED;
     ax = -MARIO_ACCEL_FLYING_X;
     nx = -1;
     break;
 
-   // RACCOON MARIO LANDING
+    // RACCOON MARIO LANDING
   case MARIO_STATE_LAND:
     if (isSitting) break;
     if (level != MARIO_LEVEL_RACCOON) break;
-    isFlying = false;
     if (vy < 0)
       vy += MARIO_JUMP_SPEED_Y / 2;
     else vy = 0.0f;
     break;
 
-   // RACCOON MARIO SPINNING 
+    // RACCOON MARIO SPINNING 
   case MARIO_STATE_SPIN:
     if (isSitting) break;
     ax = 0.0f;
@@ -518,11 +535,12 @@ void CMario::SetState(int state)
     ax = MARIO_ACCEL_SPINNING_X;
     break;
 
-  // IDLE
+    // IDLE
   case MARIO_STATE_IDLE:
     ax = 0.0f;
     vx = 0.0f;
     isSpinning = false;
+    isFlying = false;
     break;
 
   case MARIO_STATE_DIE:
