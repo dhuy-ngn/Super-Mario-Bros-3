@@ -75,10 +75,10 @@
     <ClCompile Include="Portal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Kooba.cpp">
+    <ClCompile Include="Koopa.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Wood.cpp">
+    <ClCompile Include="QuestionBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -90,9 +90,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Animations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetIDs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Brick.h">
@@ -152,10 +149,10 @@
     <ClInclude Include="Portal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Kooba.h">
+    <ClInclude Include="Koopa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Wood.h">
+    <ClInclude Include="QuestionBlock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

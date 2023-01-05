@@ -5,6 +5,7 @@
 #include "Game.h"
 
 #include "Goomba.h"
+#include "Koopa.h"
 #include "Coin.h"
 #include "Portal.h"
 
@@ -16,7 +17,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
   vx += ax * dt;
 
   if (abs(vx) > abs(maxVx)) vx = maxVx;
-  if (abs(vy) > abs(maxVy)) vy = maxVy;
 
   // reset untouchable timer if untouchable time has passed
   if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
@@ -27,6 +27,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
   isOnPlatform = false;
 
+  CGameObject::Update(dt, coObjects);
   CCollision::GetInstance()->Process(this, dt, coObjects);
 }
 
@@ -34,6 +35,13 @@ void CMario::OnNoCollision(DWORD dt)
 {
   x += vx * dt;
   y += vy * dt;
+
+  if (y > 200) 
+    // There is nothing that states that the window height is 400 yet
+    // TODO: De-hardcoding the 200
+  { 
+    SetState(MARIO_STATE_FALL_OFF);
+  }
 }
 
 void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
@@ -51,10 +59,14 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
 
   if (dynamic_cast<CGoomba*>(e->obj))
     OnCollisionWithGoomba(e);
+  else if (dynamic_cast<CKoopa*>(e->obj))
+    OnCollisionWithKoopa(e);
   else if (dynamic_cast<CCoin*>(e->obj))
     OnCollisionWithCoin(e);
   else if (dynamic_cast<CPortal*>(e->obj))
     OnCollisionWithPortal(e);
+  // Collide with Piranha Plants
+  // Collide with Piranha Plants bullets
 }
 
 void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
@@ -92,6 +104,54 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
       }
     }
   }
+}
+
+void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
+{
+  CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
+
+  // jump on top
+  if (e->ny < 0)
+  {
+    if (koopa->GetState() == KOOPA_STATE_HIDING)
+    {
+      if (nx >= 0)
+        koopa->SetState(KOOPA_STATE_SPINNING_RIGHT);
+      else
+        koopa->SetState(KOOPA_STATE_SPINNING_LEFT);
+    }
+    else
+      koopa->SetState(KOOPA_STATE_HIDING);
+    vy = -MARIO_JUMP_DEFLECT_SPEED;
+  }
+  else // hit by Koopa
+  {
+    if(koopa->GetState()==KOOPA_STATE_HIDING)
+    if (vx >= 0)
+      koopa->SetState(KOOPA_STATE_SPINNING_RIGHT);
+    else
+      koopa->SetState(KOOPA_STATE_SPINNING_LEFT);
+    else {
+      if (!untouchable)
+      {
+        switch (level) {
+        case MARIO_LEVEL_RACCOON:
+          level = MARIO_LEVEL_BIG;
+          StartUntouchable();
+          break;
+        case MARIO_LEVEL_BIG:
+          level = MARIO_LEVEL_SMALL;
+          StartUntouchable();
+          break;
+        default:
+          DebugOut(L">>> Mario DIE >>> \n");
+          SetState(MARIO_STATE_DIE);
+        }
+      }
+    }
+  }
+
+  // TODO: Mario holding Koopa's shell
 }
 
 void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
@@ -370,7 +430,7 @@ void CMario::Render()
 void CMario::SetState(int state)
 {
   // DIE is the end state, cannot be changed! 
-  if (this->state == MARIO_STATE_DIE) return;
+  if (this->state == MARIO_STATE_DIE || this->state == MARIO_STATE_FALL_OFF) return;
 
   switch (state)
   {
@@ -545,6 +605,11 @@ void CMario::SetState(int state)
 
   case MARIO_STATE_DIE:
     vy = -MARIO_JUMP_DEFLECT_SPEED;
+    vx = 0;
+    ax = 0;
+    break;
+
+  case MARIO_STATE_FALL_OFF:
     vx = 0;
     ax = 0;
     break;

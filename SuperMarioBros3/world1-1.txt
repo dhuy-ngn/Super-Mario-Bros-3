@@ -1,0 +1,41 @@
+# list of object assets to load in this scene
+[ASSETS]
+#
+#MARIO
+mario.txt
+#
+#ITEMS
+coin.txt
+#
+#PLATFORM
+platform.txt
+#
+#ENEMIES
+goomba.txt
+koopa.txt
+#
+#
+[OBJECTS]
+# type	x	y	extra_settings per object type
+# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
+# See OBJECT_TYPE constants in AssetIDs.h
+
+# MARIO
+0	40	170
+
+#COIN
+
+#ENEMIES
+# 2 = GOOMBA;	3 = KOOPA;	9 = PIRANHA PLANTS
+#For Koopas,	30000 = Normal Koopas;	30001 = Wing Koopas
+#		39998 = Green Koopas;	39999 = Red Koopas
+#type	x	y	level	color
+3	230	170	30000	39998
+3	430	170	30000	39998
+
+#Platform
+5	0	195	15	15	40	61100	61200	61300
+5	600	180	15	15	31	61100	61200	61300
+5	600	195	15	15	31	62100	62200	62300
+#Portal 
+

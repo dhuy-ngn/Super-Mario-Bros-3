@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include "AssetIDs.h"
 
 #include "PlayScene.h"
 #include "Utils.h"
@@ -29,6 +28,19 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define ASSETS_SECTION_UNKNOWN -1
 #define ASSETS_SECTION_SPRITES 1
 #define ASSETS_SECTION_ANIMATIONS 2
+
+#define OBJECT_TYPE_MARIO	0
+#define OBJECT_TYPE_BRICK	1
+#define OBJECT_TYPE_GOOMBA	2
+#define OBJECT_TYPE_KOOPA	3
+#define OBJECT_TYPE_COIN 4
+#define OBJECT_TYPE_PLATFORM 5
+#define OBJECT_TYPE_QUESTION_BLOCK 6
+#define OBJECT_TYPE_DECORATION 7
+#define OBJECT_TYPE_DECOR_PLATFORM 8
+#define OBJECT_TYPE_PIRANHA_PLANT	9
+
+#define OBJECT_TYPE_PORTAL	50
 
 #define MAX_SCENE_LINE 1024
 
@@ -77,7 +89,7 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 	LPANIMATION ani = new CAnimation();
 
 	int ani_id = atoi(tokens[0].c_str());
-	for (int i = 1; i < tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
+	for (unsigned i = 1; i < tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
 	{
 		int sprite_id = atoi(tokens[i].c_str());
 		int frame_time = atoi(tokens[i+1].c_str());
@@ -106,7 +118,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	switch (object_type)
 	{
 	case OBJECT_TYPE_MARIO:
-		if (player!=NULL) 
+		if (player != NULL)
 		{
 			DebugOut(L"[ERROR] MARIO object was created before!\n");
 			return;
@@ -116,7 +128,18 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object has been created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x,y); break;
+	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(x, y); break;
+	case OBJECT_TYPE_KOOPA:
+	{
+
+		int level = atoi(tokens[3].c_str());
+		int color = atoi(tokens[4].c_str());
+
+		obj = new CKoopa(x, y, level, color); 
+
+		break; 
+	}
+
 	case OBJECT_TYPE_BRICK: obj = new CBrick(x,y); break;
 	case OBJECT_TYPE_COIN: obj = new CCoin(x, y); break;
 
@@ -267,7 +290,7 @@ void CPlayScene::Update(DWORD dt)
 
 void CPlayScene::Render()
 {
-	for (int i = 0; i < objects.size(); i++)
+	for (unsigned i = 0; i < objects.size(); i++)
 		objects[i]->Render();
 }
 
@@ -292,7 +315,7 @@ void CPlayScene::Clear()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < objects.size(); i++)
+	for (unsigned i = 0; i < objects.size(); i++)
 		delete objects[i];
 
 	objects.clear();

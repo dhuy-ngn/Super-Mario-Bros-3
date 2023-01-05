@@ -24,9 +24,10 @@
 #define MARIO_GRAVITY			0.002f
 #define MARIO_RACCOON_GRAVITY	0.0007f
 
-#define MARIO_JUMP_DEFLECT_SPEED  0.3f
+#define MARIO_JUMP_DEFLECT_SPEED  0.5f
 
 #define MARIO_STATE_DIE				-10
+#define MARIO_STATE_FALL_OFF	-99
 #define MARIO_STATE_IDLE			0
 #define MARIO_STATE_WALKING_RIGHT	100
 #define MARIO_STATE_WALKING_LEFT	200
@@ -163,7 +164,6 @@ class CMario : public CGameObject
 	BOOLEAN isSpinning;
 	BOOLEAN isFlying;
 	float maxVx;
-	float maxVy;
 	float ax;				// acceleration on x 
 	float ay;				// acceleration on y 
 
@@ -174,7 +174,11 @@ class CMario : public CGameObject
 	int coin; 
 
 	void OnCollisionWithGoomba(LPCOLLISIONEVENT e);
+	void OnCollisionWithKoopa(LPCOLLISIONEVENT e);
 	void OnCollisionWithCoin(LPCOLLISIONEVENT e);
+	void OnCollisionWithDecoration(LPCOLLISIONEVENT e);
+	void OnCollisionWithDecorBlock(LPCOLLISIONEVENT e);
+	void OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e);
 	void OnCollisionWithPortal(LPCOLLISIONEVENT e);
 
 	int GetAniIdBig();
@@ -188,8 +192,6 @@ public:
 		isSpinning = false;
 		isFlying = false;
 		maxVx = 0.0f;
-		if (level == MARIO_LEVEL_RACCOON)
-			maxVy = MARIO_RACCOON_FALLING_SPEED;
 		ax = 0.0f;
 		if (level != MARIO_LEVEL_RACCOON)
 			ay = MARIO_GRAVITY;

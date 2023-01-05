@@ -1,8 +1,12 @@
 #include "Goomba.h"
+#include "Koopa.h"
 
 CGoomba::CGoomba(float x, float y):CGameObject(x, y)
 {
-	  
+	this->ax = 0;
+	this->ay = GOOMBA_GRAVITY;
+	die_start = -1;
+	SetState(GOOMBA_STATE_WALKING);
 }
 
 void CGoomba::GetBoundingBox(float &left, float &top, float &right, float &bottom)
@@ -33,6 +37,8 @@ void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e)
 {
 	if (!e->obj->IsBlocking()) return; 
 	if (dynamic_cast<CGoomba*>(e->obj)) return; 
+	if (dynamic_cast<CKoopa*>(e->obj))
+		OnCollisionWithKoopa(e);
 
 	if (e->ny != 0 )
 	{
@@ -77,15 +83,27 @@ void CGoomba::SetState(int state)
 	CGameObject::SetState(state);
 	switch (state)
 	{
-		case GOOMBA_STATE_DIE:
-			die_start = GetTickCount64();
-			y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE)/2;
-			vx = 0;
-			vy = 0;
-			ay = 0; 
-			break;
-		case GOOMBA_STATE_WALKING: 
-			vx = -GOOMBA_WALKING_SPEED;
-			break;
+	case GOOMBA_STATE_DIE:
+		die_start = GetTickCount64();
+		y += (GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE) / 2;
+		vx = 0;
+		vy = 0;
+		ay = 0;
+		break;
+	case GOOMBA_STATE_WALKING:
+		vx = -GOOMBA_WALKING_SPEED;
+		break;
+	case GOOMBA_STATE_KNOCKED_OUT:
+		die_start = GetTickCount64();
+		vy = -0.7f;
+	}
+}
+
+void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e) {
+	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
+
+	if (koopa->IsSpinning()) {
+		vx = KOOPA_SPINNING_SPEED/ 2;
+		SetState(GOOMBA_STATE_KNOCKED_OUT);
 	}
 }
