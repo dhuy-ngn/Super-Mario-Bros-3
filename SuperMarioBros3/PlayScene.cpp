@@ -163,7 +163,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 
-
 	case OBJECT_TYPE_QUESTION_BLOCK: 
 	{
 		int isContainingPowerup = (int)atoi(tokens[3].c_str());
