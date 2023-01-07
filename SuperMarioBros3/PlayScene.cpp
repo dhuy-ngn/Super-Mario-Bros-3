@@ -8,6 +8,7 @@
 #include "Portal.h"
 #include "Coin.h"
 #include "Platform.h"
+#include "QuestionBlock.h"
 
 #include "SampleKeyEventHandler.h"
 
@@ -159,6 +160,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			sprite_begin, sprite_middle, sprite_end
 		);
 
+		break;
+	}
+
+
+	case OBJECT_TYPE_QUESTION_BLOCK: 
+	{
+		int isContainingPowerup = (int)atoi(tokens[3].c_str());
+		obj = new CQuestionBlock(x, y, isContainingPowerup);
 		break;
 	}
 

@@ -50,12 +50,12 @@ void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e)
 	}
 }
 
-void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
+void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	vy += ay * dt;
 	vx += ax * dt;
 
-	if ( (state==GOOMBA_STATE_DIE) && (GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT) )
+	if ((state == GOOMBA_STATE_DIE && GetTickCount64() - die_start > GOOMBA_DIE_TIMEOUT) || (state == GOOMBA_STATE_KNOCKED_OUT && y >= 200))
 	{
 		isDeleted = true;
 		return;
@@ -99,11 +99,13 @@ void CGoomba::SetState(int state)
 	}
 }
 
-void CGoomba::OnCollisionWith(LPCOLLISIONEVENT e) {
+void CGoomba::OnCollisionWithKoopa(LPCOLLISIONEVENT e) {
 	CKoopa* koopa = dynamic_cast<CKoopa*>(e->obj);
 
-	if (koopa->IsSpinning()) {
-		vx = KOOPA_SPINNING_SPEED/ 2;
+	if (koopa->IsSpinning()) 
+	{
+		vx = KOOPA_SPINNING_SPEED / 2;
 		SetState(GOOMBA_STATE_KNOCKED_OUT);
 	}
+	else return;
 }

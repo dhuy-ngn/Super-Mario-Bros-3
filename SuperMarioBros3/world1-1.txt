@@ -14,6 +14,7 @@ platform.txt
 goomba.txt
 koopa.txt
 #
+question_block.txt
 #
 [OBJECTS]
 # type	x	y	extra_settings per object type
@@ -24,18 +25,33 @@ koopa.txt
 0	40	170
 
 #COIN
+4	1050	125
+4	1080	90
+4	1110	55
+4	1140	20
+4	1170	-5
 
 #ENEMIES
-# 2 = GOOMBA;	3 = KOOPA;	9 = PIRANHA PLANTS
+# 2 = GOOMBA;	3 = KOOPA;	9 = PIRANHA PLANTS	10 = VENUS FLY TRAP
 #For Koopas,	30000 = Normal Koopas;	30001 = Wing Koopas
 #		39998 = Green Koopas;	39999 = Red Koopas
 #type	x	y	level	color
-3	230	170	30000	39998
-3	430	170	30000	39998
+2	230	170
+
+#Question block
+6	183	140	0
+6	199	140	0
+6	230	95	0
+6	246	95	0
 
 #Platform
 5	0	195	15	15	40	61100	61200	61300
 5	600	180	15	15	31	61100	61200	61300
 5	600	195	15	15	31	62100	62200	62300
+5	1050	140	15	15	31	62100	62200	62300
+5	1080	105	15	15	31	62100	62200	62300
+5	1110	70	15	15	31	62100	62200	62300
+5	1140	35	15	15	31	62100	62200	62300
+5	1170	0	15	15	31	62100	62200	62300
 #Portal 
 

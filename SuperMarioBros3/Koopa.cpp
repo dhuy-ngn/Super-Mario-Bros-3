@@ -1,5 +1,6 @@
 #include "Koopa.h"
 #include "debug.h"
+#include "QuestionBlock.h"
 
 void CKoopa::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
@@ -77,8 +78,9 @@ void CKoopa::OnCollisionWith(LPCOLLISIONEVENT e)
 	if (dynamic_cast<CKoopa*>(e->obj))
 		OnCollisionWithKoopa(e);
 	//if (dynamic_cast<CGoomba*>(e->obj))
-		//.OnCollisionWithGoomba(e);
-	// collide with question block
+		//OnCollisionWithGoomba(e);
+	if (dynamic_cast<CQuestionBlock*>(e->obj))
+		OnCollisionWithQuestionBlock(e);
 	// collide with piranha plant
 
 	if (e->ny != 0)
@@ -148,8 +150,18 @@ int CKoopa::GetAniIdRedKoopaNormal() {
 	return aniId;
 }
 
-int CKoopa::GetAniIdRedKoopaWings() { return 0; }
-int CKoopa::GetAniIdGreenKoopaWings() { return 0; }
+int CKoopa::GetAniIdRedKoopaWings() {
+	int aniId = ID_ANI_KOOPA_RED_FLYING_LEFT;
+	if (vx >= 0)
+		aniId = ID_ANI_KOOPA_RED_FLYING_RIGHT;
+	return aniId;
+}
+int CKoopa::GetAniIdGreenKoopaWings() { 
+	int aniId = ID_ANI_KOOPA_GREEN_FLYING_LEFT;
+	if (vx >= 0)
+		aniId = ID_ANI_KOOPA_GREEN_FLYING_RIGHT;
+	return aniId;
+}
 
 CKoopa::CKoopa(float x, float y, int level, int color) : CGameObject(x, y)
 {
@@ -189,16 +201,20 @@ void CKoopa::SetState(int state)
 
 		// Flying Koopas
 	case KOOPA_STATE_BOUNCING_LEFT:
+		vy = -KOOPA_BOUNCING_SPEED_Y;
+		vx = -KOOPA_BOUNCING_SPEED_X;
+		break;
+
 	case KOOPA_STATE_BOUNCING_RIGHT:
+		break;
 
 	case KOOPA_STATE_UPSIDE_DOWN:
-		vx = 0.02f;
-		vy = 0.6f;
 		break;
 
 	case KOOPA_STATE_KNOCKED_OUT:
 		die_start = GetTickCount64();
 		vy = -0.7f;
+		break;
 	}
 
 	CGameObject::SetState(state);
@@ -217,5 +233,17 @@ void CKoopa::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
 		SetState(KOOPA_STATE_KNOCKED_OUT);
 	}
 	else
-		vx = -vx;
+	{
+		koopa->vx = -koopa->vx;
+		return;
+	}
+}
+
+void CKoopa::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
+{
+	CQuestionBlock* question_block = dynamic_cast<CQuestionBlock*>(e->obj);
+
+	if (question_block->GetState() != QUESTION_BLOCK_STATE_INACTIVE && IsSpinning())
+		question_block->SetState(QUESTION_BLOCK_STATE_INACTIVE);
+	else return;
 }

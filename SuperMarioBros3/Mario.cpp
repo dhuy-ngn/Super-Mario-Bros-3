@@ -10,6 +10,7 @@
 #include "Portal.h"
 
 #include "Collision.h"
+#include "QuestionBlock.h"
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
@@ -65,6 +66,8 @@ void CMario::OnCollisionWith(LPCOLLISIONEVENT e)
     OnCollisionWithCoin(e);
   else if (dynamic_cast<CPortal*>(e->obj))
     OnCollisionWithPortal(e);
+  else if (dynamic_cast<CQuestionBlock*>(e->obj))
+    OnCollisionWithQuestionBlock(e);
   // Collide with Piranha Plants
   // Collide with Piranha Plants bullets
 }
@@ -86,7 +89,7 @@ void CMario::OnCollisionWithGoomba(LPCOLLISIONEVENT e)
   {
     if (untouchable == 0)
     {
-      if (goomba->GetState() != GOOMBA_STATE_DIE)
+      if (goomba->GetState() != GOOMBA_STATE_DIE && goomba->GetState() != GOOMBA_STATE_KNOCKED_OUT)
       {
         switch (level) {
         case MARIO_LEVEL_RACCOON:
@@ -126,11 +129,11 @@ void CMario::OnCollisionWithKoopa(LPCOLLISIONEVENT e)
   }
   else // hit by Koopa
   {
-    if(koopa->GetState()==KOOPA_STATE_HIDING)
-    if (vx >= 0)
-      koopa->SetState(KOOPA_STATE_SPINNING_RIGHT);
-    else
-      koopa->SetState(KOOPA_STATE_SPINNING_LEFT);
+    if (koopa->GetState() == KOOPA_STATE_HIDING && koopa->GetState() != KOOPA_STATE_KNOCKED_OUT)
+      if (ax >= 0)
+        koopa->SetState(KOOPA_STATE_SPINNING_RIGHT);
+      else
+        koopa->SetState(KOOPA_STATE_SPINNING_LEFT);
     else {
       if (!untouchable)
       {
@@ -158,6 +161,14 @@ void CMario::OnCollisionWithCoin(LPCOLLISIONEVENT e)
 {
   e->obj->Delete();
   coin++;
+}
+
+void CMario::OnCollisionWithQuestionBlock(LPCOLLISIONEVENT e)
+{
+  CQuestionBlock* question_block = dynamic_cast<CQuestionBlock*>(e->obj);
+
+  if (question_block->GetState() != QUESTION_BLOCK_STATE_INACTIVE && e->ny > 0)
+    question_block->SetState(QUESTION_BLOCK_STATE_INACTIVE);
 }
 
 void CMario::OnCollisionWithPortal(LPCOLLISIONEVENT e)
